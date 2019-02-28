@@ -2,6 +2,15 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import datetime
 
+class BaseModel(models.Model):
+    '''
+    Abstract Django Model that adds a `modified` field to all Models, allowing for smart caching at the client side. 
+    '''
+    modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
 state_code_to_name = {
     'LP': 'La Paz',
     'CO': 'Cochabamba',
@@ -15,7 +24,7 @@ state_code_to_name = {
 }
 
 
-class EPSA(models.Model):
+class EPSA(BaseModel):
     '''
     Modelo representando una EPSA (Entidad Prestadora de Servicios de Agua Potable y Saneamiento).
     '''
@@ -73,7 +82,7 @@ class EPSA(models.Model):
     def __str__(self):
         return self.code
 
-class Variable(models.Model):
+class Variable(BaseModel):
     '''
     Modelo representando una Variable.
     '''
@@ -128,7 +137,7 @@ class Variable(models.Model):
     def __str__(self):
         return self.code
 
-class Indicator(models.Model):
+class Indicator(BaseModel):
     '''
     Modelo representando un Indicador.
     '''
@@ -202,7 +211,7 @@ for m, m0 in zip(['min', 'max'], ['mínimo', 'máximo']):
             )
         )
 
-class VariableReport(models.Model):
+class VariableReport(BaseModel):
     '''
     Modelo representando un reporte mensual, semestral o anual completo de variables.
     '''
@@ -335,7 +344,7 @@ for i, var_vname, var_htext in zip(range(51), VAR_VNAMES, VAR_HTEXTS):
     )
 
 
-class IndicatorMeasurement(models.Model):
+class IndicatorMeasurement(BaseModel):
     '''
     Modelo Representando la medida de un Indicador en base a un reporte mensual, semestral o anual.
     '''

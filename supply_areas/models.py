@@ -1,8 +1,8 @@
 from django.db import models
 from djgeojson.fields import MultiPolygonField
-from performance.models import EPSA
+from performance.models import EPSA, BaseModel
 
-class SupplyArea(models.Model):
+class SupplyArea(BaseModel):
     epsa = models.ForeignKey(
         to=EPSA,
         on_delete=models.CASCADE,
