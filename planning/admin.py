@@ -1,25 +1,6 @@
 from django.contrib import admin
 from planning import models
 
-class IncomeInline(admin.TabularInline):
-    model = models.Income
-    verbose_name = 'Ingreso'
-    verbose_name_plural = 'Ingresos Presupuestados'
-
-class ExpenseInline(admin.TabularInline):
-    model = models.Expense
-    verbose_name = 'Gasto'
-    verbose_name_plural = 'Gastos Presupuestados'
-
-class InvestmentInline(admin.TabularInline):
-    model = models.Investment
-    verbose_name = 'Inversión'
-    verbose_name_plural = 'Inversiones Presupuestadas'
-
-class GoalInline(admin.TabularInline):
-    model = models.Goal
-    verbose_name = 'Meta de expansión'
-    verbose_name_plural = 'Metas de expansión'
 
 class PlanGoalInline(admin.TabularInline):
     model = models.PlanGoal
@@ -27,16 +8,17 @@ class PlanGoalInline(admin.TabularInline):
     verbose_name_plural = 'Metas'
 
 
+class CoopExpenseInline(admin.StackedInline):
+    model = models.CoopExpense
+
+class MuniExpenseInline(admin.StackedInline):
+    model = models.MuniExpense
+
 @admin.register(models.POA)
 class POAModelAdmin(admin.ModelAdmin):
     view_on_site = False
 
-    inlines = [
-        IncomeInline,
-        ExpenseInline,
-        InvestmentInline,
-        GoalInline
-    ]
+    inlines = [CoopExpenseInline, MuniExpenseInline]
     
     list_filter = ('epsa__category', 'epsa__state','year')
     search_fields = ['epsa', 'epsa__name', 'epsa__state',]
@@ -45,6 +27,14 @@ class POAModelAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         extra_context = {'title': 'AAPS - Planificación: POAs'}
         return super(POAModelAdmin, self).changelist_view(request, extra_context=extra_context)
+
+    fieldsets = (
+        ('General',{'fields':('epsa','year','order',)}),
+        ('Ingresos',{'fields':('in_op_ap','in_op_alc','in_op_alc_pozo','in_op_otros','in_financieros','in_no_op_otros',)}),
+        # ('gastos',{'fields':('expense',)}),
+        ('Inversiones',{'fields':('inv_infraestructura_ap','inv_infraestructura_alc','inv_equipo','inv_diseno_estudio','inv_otros')}),
+    )
+
 
 @admin.register(models.Plan)
 class PlanModelAdmin(admin.ModelAdmin):

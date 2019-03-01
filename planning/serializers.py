@@ -3,50 +3,41 @@ from planning import models
 from drf_queryfields import QueryFieldsMixin
 
 
-class IncomeSerializer(serializers.ModelSerializer):
+class CoopExpenseSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     class Meta:
-        model = models.Income
-        exclude = ('id','poa')
-class ExpenseSerializer(serializers.ModelSerializer):
+        model = models.CoopExpense
+        exclude = ('id','poa',)
+
+class MuniExpenseSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     class Meta:
-        model = models.Expense
-        exclude = ('id','poa')
-class InvestmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Investment
-        exclude = ('id','poa')
-class GoalSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Goal
-        exclude = ('id','poa')
+        model = models.MuniExpense
+        exclude = ('id','poa',)
 
 
 class POASerializer(QueryFieldsMixin, serializers.ModelSerializer):
-    incomes = IncomeSerializer(many=True, required=False)
-    expenses = ExpenseSerializer(many=True, required=False)
-    investments = InvestmentSerializer(many=True, required=False)
-    goals = GoalSerializer(many=True, required=False)
+    coop_expense = CoopExpenseSerializer(required=False)
+    muni_expense = MuniExpenseSerializer(required=False)
 
     class Meta:
         model = models.POA
         fields = '__all__'
 
-    def create(self, validated_data):
-        objects_types = ['incomes','expenses','investments','goals',]
-        objects_models = [models.Income, models.Expense, models.Investment, models.Goal]
-        objects_data = {}
+    # def create(self, validated_data):
+    #     objects_types = ['incomes','expenses','investments','goals',]
+    #     objects_models = [models.Income, models.Expense, models.Investment, models.Goal]
+    #     objects_data = {}
 
-        for obj_type in objects_types:
-            objects_data[obj_type] = validated_data.pop(obj_type, None)
+    #     for obj_type in objects_types:
+    #         objects_data[obj_type] = validated_data.pop(obj_type, None)
 
-        poa = models.POA.objects.create(**validated_data)
+    #     poa = models.POA.objects.create(**validated_data)
 
-        for obj_type, obj_model in zip(objects_types, objects_models):
-            objs_data = objects_data[obj_type]
-            if objs_data:
-                for obj_data in objs_data:
-                    obj_model.objects.create(poa=poa, **obj_data)
-        return poa
+    #     for obj_type, obj_model in zip(objects_types, objects_models):
+    #         objs_data = objects_data[obj_type]
+    #         if objs_data:
+    #             for obj_data in objs_data:
+    #                 obj_model.objects.create(poa=poa, **obj_data)
+        # return poa
 
 class PlanGoalSerializer(serializers.ModelSerializer):
     class Meta:

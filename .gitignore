@@ -39,3 +39,7 @@ env.bak/
 venv.bak/
 
 static/
+
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
