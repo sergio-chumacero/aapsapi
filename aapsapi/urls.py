@@ -61,7 +61,8 @@ ofrece más información acerca de los modelos de datos del sistema.
 docs_view = include_docs_urls(
     title='AAPS-API',
     description=docs_description,
-    public=False,
+    public=True,
+    permission_classes=[permissions.AllowAny,]
 )
 
 

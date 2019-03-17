@@ -2,7 +2,7 @@ import os
 from secret_key import SECRET_KEY
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -91,7 +91,8 @@ STATIC_ROOT = 'static'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'permissions.CustomPermission',
+        # 'permissions.CustomPermission',
+        'rest_framework.permissions.IsAdminUser',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
@@ -105,3 +106,5 @@ REST_FRAMEWORK = {
 SERIALIZATION_MODULES = {'geojson': 'djgeojson.serializers'}
 
 JET_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
+
+# from rest_framework.permissions import IsAdminUser
