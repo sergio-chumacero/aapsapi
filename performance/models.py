@@ -358,7 +358,7 @@ class IndicatorMeasurement(BaseModel):
         verbose_name='año',
         default=datetime.now().year,
         help_text='Año del reporte.',
-        validators=[MaxValueValidator(1900)]
+        validators=[MinValueValidator(1900)]
     )
     month = models.IntegerField(
         verbose_name='mes',
