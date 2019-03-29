@@ -31,8 +31,8 @@ class POAModelAdmin(admin.ModelAdmin):
     fieldsets = (
         ('General',{'fields':('epsa','year','order',)}),
         ('Ingresos',{'fields':('in_op_ap','in_op_alc','in_op_alc_pozo','in_op_otros','in_financieros','in_no_op_otros',)}),
-        # ('gastos',{'fields':('expense',)}),
         ('Inversiones',{'fields':('inv_infraestructura_ap','inv_infraestructura_alc','inv_equipo','inv_diseno_estudio','inv_otros')}),
+        ('Metas de Expansión',{'fields':('pob_total','pob_ap','pob_alc','con_ap','con_ap_total','cob_ap','con_alc','con_alc_total','cob_alc','cob_micro','anc',)}),
     )
 
 

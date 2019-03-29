@@ -116,6 +116,76 @@ class POA(BaseModel):
         blank='True',
         null='True',
     )
+
+    # Metas de Expansión
+
+    pob_total = models.FloatField(
+        verbose_name=f'población total',
+        help_text= f'Población Total (hab.)',
+        blank='True',
+        null='True',
+    )
+
+    pob_ap = models.FloatField(
+        verbose_name=f'población con agua potable',
+        help_text= f'Población con Agua Potable (hab.)',
+        blank='True',
+        null='True',
+    )
+    pob_alc = models.FloatField(
+        verbose_name=f'población con alcantarillado',
+        help_text= f'Población con Alcantarillado (hab.)',
+        blank='True',
+        null='True',
+    )
+    con_ap = models.FloatField(
+        verbose_name=f'conexiones AP nuevas',
+        help_text= f'Conexiones Nuevas de Agua Potable (N°)',
+        blank='True',
+        null='True',
+    )
+    con_ap_total = models.FloatField(
+        verbose_name=f'total conexiones AP',
+        help_text= f'Total de Conexiones de Agua Potable (N°)',
+        blank='True',
+        null='True',
+    )
+    cob_ap = models.FloatField(
+        verbose_name=f'cobertura AP',
+        help_text= f'Cobertura de Agua Potable(%)',
+        blank='True',
+        null='True',
+    )
+    con_alc = models.FloatField(
+        verbose_name=f'conexiones de alcantarillado nuevas',
+        help_text= f'Nuevas Conexiones de Alcantarillado (N°)',
+        blank='True',
+        null='True',
+    )
+    con_alc_total = models.FloatField(
+        verbose_name=f'total conexiones de alcantarillado',
+        help_text= f'Total de Conexiones de Alcantarillado (N°)',
+        blank='True',
+        null='True',
+    )
+    cob_alc = models.FloatField(
+        verbose_name=f'cobertura de alcantarillado',
+        help_text= f'Cobertura de Alcantarillado (%)',
+        blank='True',
+        null='True',
+    )
+    cob_micro = models.FloatField(
+        verbose_name=f'cobertura de micromedición',
+        help_text= f'Cobertura de Micromedición (%)',
+        blank='True',
+        null='True',
+    )
+    anc = models.FloatField(
+        verbose_name=f'agua no contabilizada',
+        help_text= f'Índice de Agua No Contabilizada (%)',
+        blank='True',
+        null='True',
+    )
     
     class Meta:
         unique_together = ('epsa','year','order',)
