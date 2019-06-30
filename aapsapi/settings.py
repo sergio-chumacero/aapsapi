@@ -1,10 +1,10 @@
 import os
 from secret_key import SECRET_KEY
+from databases import DATABASES
+from allowed_hosts import ALLOWED_HOSTS
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = True
-
-ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'jet.dashboard',
@@ -57,13 +57,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'aapsapi.wsgi.application'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 AUTH_PASSWORD_VALIDATORS = [
     {

@@ -5,6 +5,8 @@ __pycache__/
 .vscode/
 
 secret_key.py
+allowed_hosts.py
+databases.py
 
 db.sqlite3
 
