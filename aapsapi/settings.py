@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'performance.apps.PerformanceConfig',
     'planning.apps.PlanningConfig',
     'supply_areas.apps.SupplyAreasConfig',
+    'ambiental.apps.AmbientalConfig',
 ]
 
 MIDDLEWARE = [
@@ -85,7 +86,7 @@ STATIC_ROOT = 'static'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         # 'permissions.CustomPermission',
-        'rest_framework.permissions.IsAdminUser',
+        # 'rest_framework.permissions.IsAdminUser',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',

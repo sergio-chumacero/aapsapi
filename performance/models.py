@@ -232,6 +232,7 @@ class VariableReport(BaseModel):
         verbose_name='mes',
         help_text='Mes del reporte o blanco si el reporte es anual.',
         blank=True, null=True,
+        default=1,
         validators=[MinValueValidator(1),MaxValueValidator(12)]
     )
     class Meta:
@@ -364,6 +365,7 @@ class IndicatorMeasurement(BaseModel):
         verbose_name='mes',
         help_text='Mes del reporte o blanco si el reporte es anual.',
         blank=True, null=True,
+        default=1,
         validators=[MinValueValidator(1),MaxValueValidator(12)]
     )
     class Meta:

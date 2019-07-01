@@ -146,7 +146,7 @@ class SupplyAreaViewSet(viewsets.ViewSet):
             queryset = queryset.filter(epsa__code=epsa_code)
             
         options = dict(
-            properties=['epsa','area'],
+            properties=['epsa',],
             geometry_field='geom',
             precision=None,
             simplify=None,
