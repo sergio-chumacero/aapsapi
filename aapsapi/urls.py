@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView
 
 from supply_areas.views import SupplyAreaViewSet
+from ambiental.views import SARHViewSet
 from performance import views as performance_views
 from planning import views as planning_views
 
@@ -31,6 +33,7 @@ schema_view = get_schema_view(
 
 router = routers.DefaultRouter()
 router.register('supply_areas', SupplyAreaViewSet, basename='supply_areas')
+router.register('sarhs',SARHViewSet,basename='sarhs')
 router.register('epsas', performance_views.EPSAViewSet)
 router.register('variables', performance_views.VariableViewSet)
 router.register('indicators', performance_views.IndicatorViewSet)
@@ -66,7 +69,8 @@ docs_view = include_docs_urls(
 )
 
 
-urlpatterns = [    
+urlpatterns = [
+    path('', RedirectView.as_view(url='/admin/'))
     path('jet/', include('jet.urls', 'jet')),
     path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     path('admin/', admin.site.urls),
@@ -77,5 +81,5 @@ urlpatterns = [
 
     path('docs/', docs_view),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
