@@ -46,7 +46,7 @@ class EPSA(BaseModel):
         ('D', 'D'),
     )
     code = models.CharField(
-        max_length=16,
+        max_length=64,
         primary_key=True,
         verbose_name='sigla',
         help_text='Sigla de la EPSA. Debe ser único y contener no más de 16 caracteres. De preferencia en mayúsculas. Campo obligatorio.',
