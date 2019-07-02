@@ -16,7 +16,7 @@ class TecnicalDataSupSerializer(QueryFieldsMixin, serializers.ModelSerializer):
         exclude = ('id','sarh',)
 
 class SARHSerializer(QueryFieldsMixin, serializers.ModelSerializer):
-    epsa = serializers.CharField(allow_blank=True)
+    epsa = serializers.CharField(allow_blank=True,required=False)
     tecnical_sub = TecnicalDataSubSerializer(required=False,many=True)
     tecnical_sup = TecnicalDataSupSerializer(required=False,many=True)
 

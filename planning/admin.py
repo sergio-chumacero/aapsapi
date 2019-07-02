@@ -7,7 +7,6 @@ class PlanGoalInline(admin.TabularInline):
     verbose_name = 'Meta'
     verbose_name_plural = 'Metas'
 
-
 class CoopExpenseInline(admin.StackedInline):
     model = models.CoopExpense
 
@@ -20,8 +19,8 @@ class POAModelAdmin(admin.ModelAdmin):
 
     inlines = [CoopExpenseInline, MuniExpenseInline]
     
-    list_filter = ('epsa__category', 'epsa__state','year')
-    search_fields = ['epsa', 'epsa__name', 'epsa__state',]
+    list_filter = ('epsa','year',)
+    search_fields = ['epsa', 'year',]
     list_display = ('epsa', 'year', 'order', 'get_category', 'get_state',)
 
     def changelist_view(self, request, extra_context=None):
@@ -44,8 +43,8 @@ class PlanModelAdmin(admin.ModelAdmin):
     ]
     
     list_display = ('epsa', 'year', 'plan_type', 'get_category', 'get_state',)
-    list_filter = ('epsa__category', 'epsa__state','year')
-    search_fields = ['epsa', 'epsa__name', 'epsa__state',]
+    list_filter = ('epsa','year')
+    search_fields = ['epsa', 'year',]
 
     def changelist_view(self, request, extra_context=None):
         extra_context = {'title': 'AAPS - Planificación: PDQs/PTDS'}

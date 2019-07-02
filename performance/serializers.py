@@ -19,11 +19,37 @@ class IndicatorSerializer(QueryFieldsMixin, serializers.ModelSerializer):
         fields = '__all__'
 
 class VariableReportSerializer(QueryFieldsMixin, serializers.ModelSerializer):
+    epsa = serializers.CharField(allow_blank=True,required=False)
     class Meta:
         model = VariableReport
         fields = '__all__'
+    def create(self, validated_data):
+        epsa_code = validated_data.pop('epsa',None)
+
+        if epsa_code:
+            epsa_tuple = EPSA.objects.get_or_create(code=epsa_code)
+            measurement = IndicatorMeasurement.objects.create(epsa=epsa_tuple[0], **validated_data)
+        else:
+            measurement = IndicatorMeasurement.objects.create(**validated_data)
+
+        return measurement
 
 class IndicatorMeasurementSerializer(QueryFieldsMixin, serializers.ModelSerializer):
+    epsa = serializers.CharField(allow_blank=True,required=False)
+
     class Meta:
         model = IndicatorMeasurement
         fields = '__all__'
+    
+    def create(self, validated_data):
+        epsa_code = validated_data.pop('epsa',None)
+
+        if epsa_code:
+            epsa_tuple = EPSA.objects.get_or_create(code=epsa_code)
+            measurement = IndicatorMeasurement.objects.create(epsa=epsa_tuple[0], **validated_data)
+        else:
+            measurement = IndicatorMeasurement.objects.create(**validated_data)
+
+        return measurement
+    
+

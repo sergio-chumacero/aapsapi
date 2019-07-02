@@ -20,11 +20,9 @@ class POA(BaseModel):
     '''
     Modelo representando un Presupuesto Operativo Anual (POA) de una EPSA.
     '''
-    epsa = models.ForeignKey(
-        to=EPSA,
+    epsa = models.CharField(
+        max_length=64,
         verbose_name='EPSA',
-        on_delete=models.CASCADE,
-        related_name='poas',
         help_text='EPSA que reporta el POA'
     )
     year = models.IntegerField(
@@ -191,7 +189,7 @@ class POA(BaseModel):
         unique_together = ('epsa','year','order',)
         verbose_name = 'POA'
         verbose_name_plural = 'POAs'
-        ordering = ['epsa__code','year','order',]
+        ordering = ['epsa','year','order',]
 
     def clean(self, *args, **kwargs):
         if hasattr(self, 'coop_expense') and hasattr(self, 'muni_expense'):
@@ -205,10 +203,20 @@ class POA(BaseModel):
     def __str__(self):
         return f'{self.epsa}-{self.year}-{self.order}'
     def get_category(self):
-        return self.epsa.category
+        rel_epsa = EPSA.objects.filter(code=self.epsa)
+        if rel_epsa:
+            cat = str(rel_epsa[0].category)
+            if cat in ['A','B','C','D']:
+                return cat
+        return ''
     get_category.short_description = 'categoría'
     def get_state(self):
-        return state_code_to_name[self.epsa.state]
+        rel_epsa = EPSA.objects.filter(code=self.epsa)
+        if rel_epsa:
+            state_code = str(rel_epsa[0].state)
+            if state_code in state_code_to_name.keys():
+                return state_code_to_name[state_code]
+        return ''
     get_state.short_description = 'departamento'
 
 
@@ -349,11 +357,9 @@ class Plan(BaseModel):
         ('ptds', 'PTDS'),
     )
 
-    epsa = models.ForeignKey(
-        to=EPSA,
+    epsa = models.CharField(
+        max_length=64,
         verbose_name='EPSA',
-        on_delete=models.CASCADE,
-        related_name='ptds',
         help_text='EPSA que reporta el PTDS'
     )
     year = models.IntegerField(
@@ -373,15 +379,25 @@ class Plan(BaseModel):
         unique_together = ('epsa','year')
         verbose_name = 'PDQ/PTDS'
         verbose_name_plural = 'PDQs/PTDS'
-        ordering = ['epsa__code','year',]
+        ordering = ['epsa','year',]
 
     def __str__(self):
         return f'{self.epsa}-{self.year}-{self.plan_type}'
     def get_category(self):
-        return self.epsa.category
+        rel_epsa = EPSA.objects.filter(code=self.epsa)
+        if rel_epsa:
+            cat = str(rel_epsa[0].category)
+            if cat in ['A','B','C','D']:
+                return cat
+        return ''
     get_category.short_description = 'categoría'
     def get_state(self):
-        return state_code_to_name[self.epsa.state]
+        rel_epsa = EPSA.objects.filter(code=self.epsa)
+        if rel_epsa:
+            state_code = str(rel_epsa[0].state)
+            if state_code in state_code_to_name.keys():
+                return state_code_to_name[state_code]
+        return ''
     get_state.short_description = 'departamento'
 
 

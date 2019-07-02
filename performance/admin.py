@@ -41,8 +41,8 @@ class IndicatorModelAdmin(admin.ModelAdmin):
 @admin.register(models.VariableReport)
 class VariableReportModelAdmin(admin.ModelAdmin):
     view_on_site = False
-    list_filter = ('epsa__category', 'epsa__state', 'year', 'epsa')
-    search_fields = ['epsa__code', 'epsa__name', 'epsa__state', 'year', 'month']
+    list_filter = ('year', 'epsa')
+    search_fields = ['epsa', 'year', 'month']
     list_display = ('epsa', 'year', 'month', 'get_category', 'get_state',)
     fields_list = [('epsa', 'year'), ]
     for i in range(51):
@@ -55,8 +55,8 @@ class VariableReportModelAdmin(admin.ModelAdmin):
 @admin.register(models.IndicatorMeasurement)
 class IndicatorMeasurementModelAdmin(admin.ModelAdmin):
     view_on_site = False
-    list_filter = ('epsa__category', 'epsa__state', 'year', 'month', 'epsa')
-    search_fields = ['epsa__code', 'epsa__name', 'epsa__state', 'year',]
+    list_filter = ('year', 'month', 'epsa')
+    search_fields = ['epsa', 'year',]
     list_display = ('epsa', 'year', 'month', 'get_category', 'get_state',)
     def changelist_view(self, request, extra_context=None):
         extra_context = {'title': 'AAPS - Seguimiento Regulatorio: Medidas de Indicadores'}

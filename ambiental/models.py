@@ -4,14 +4,17 @@ from datetime import datetime
 from djgeojson.fields import PointField
 from performance.models import EPSA
 
-# class BaseModel(models.Model):
-#     '''
-#     Abstract Django Model that adds a `modified` field to all Models, allowing for smart caching at the client side. 
-#     '''
-#     modified = models.DateTimeField(auto_now=True)
-
-#     class Meta:
-#         abstract = True
+state_code_to_name = dict(
+    LP='La Paz',
+    CO='Cochabamba',
+    PO='Potosí',
+    SC='Santa Cruz',
+    CH='Chuquisaca',
+    OR='Oruro',
+    TA='Tarija',
+    BE='Beni',
+    PA='Pando',
+)
 
 class SARH(models.Model):
     '''
@@ -66,11 +69,8 @@ class SARH(models.Model):
         help_text='Código de la carpeta del SARH. No debe contener más de 16 caracteres. De preferencia en mayúsculas.',
         blank=True,null=True,
     )
-    epsa = models.ForeignKey(
-        to=EPSA,
-        verbose_name='EPSA',
-        on_delete=models.SET_NULL,
-        related_name='sarhs',
+    epsa = models.CharField(
+        max_length=64,
         help_text='EPSA que provee el servicio SARH.',
         blank=True, null=True,
     )
@@ -278,15 +278,17 @@ class SARH(models.Model):
     class Meta:
         verbose_name = 'Sistema de Autoabastecimiento de Recursos Hídricos (SARH)'
         verbose_name_plural = 'Sistemas de Autoabastecimiento de Recursos Hídricos (SARH)'
-        ordering = ['epsa__category', 'epsa__code',]
+        ordering = ['epsa','user',]
 
     def __str__(self):
         return f'{self.epsa} - {self.user}'
     def get_state(self):
-        if self.epsa is not None:
-            return self.epsa.state
-        else:
-            return '-'
+        rel_epsa = EPSA.objects.filter(code=self.epsa)
+        if rel_epsa:
+            state_code = str(rel_epsa[0].state)
+            if state_code in state_code_to_name.keys():
+                return state_code_to_name[state_code]
+        return ''
     get_state.short_description = 'Departamento'
     def get_sub_subt(self):
         return self.sub_subt

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from planning import models
+from performance.models import EPSA
 from drf_queryfields import QueryFieldsMixin
 
 
@@ -21,6 +22,24 @@ class POASerializer(QueryFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = models.POA
         fields = '__all__'
+
+    def create(self, validated_data):
+        epsa_code = validated_data.pop('epsa',None)
+        coop_expense = validated_data.pop('coop_expense', None)
+        muni_expense = validated_data.pop('muni_expense', None)
+
+        if epsa_code:
+            epsa_tuple = EPSA.objects.get_or_create(code=epsa_code)
+            poa = models.POA.objects.create(epsa=epsa_tuple[0], **validated_data)
+        else:
+            poa = models.SARH.objects.create(**validated_data)
+
+        if coop_expense is not None:
+            models.CoopExpense.objects.create(poa=poa,**coop_expense)
+        if muni_expense is not None:
+            models.MuniExpense.objects.create(poa=poa,**muni_expense)
+
+        return poa
 
     # def create(self, validated_data):
     #     objects_types = ['incomes','expenses','investments','goals',]

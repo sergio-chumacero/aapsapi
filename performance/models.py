@@ -215,12 +215,11 @@ class VariableReport(BaseModel):
     '''
     Modelo representando un reporte mensual, semestral o anual completo de variables.
     '''
-    epsa = models.ForeignKey(
-        to='EPSA',
+    epsa = models.CharField(
+        max_length=64,
         verbose_name='EPSA',
-        on_delete=models.CASCADE,
-        related_name='full_reports',
-        help_text='EPSA que reporta las variables'
+        help_text='EPSA que reporta las variables',
+        blank=True, null=True,
     )
     year = models.IntegerField(
         verbose_name='Año',
@@ -239,15 +238,25 @@ class VariableReport(BaseModel):
         unique_together=('epsa','year','month')
         verbose_name = 'Reporte de variables'
         verbose_name_plural = 'Reportes de variables'
-        ordering = ['epsa__code', 'year','month']
+        ordering = ['epsa', 'year','month']
     def __str__(self):
         m = '-' + str(self.month) if self.month else ''
         return f'{str(self.epsa)}-{str(self.year)}{m}'
     def get_category(self):
-        return self.epsa.category
+        rel_epsa = EPSA.objects.filter(code=self.epsa)
+        if rel_epsa:
+            cat = rel_epsa[0].category
+            if str(cat) in ['A','B','C','D']:
+                return str(cat)
+        return ''
     get_category.short_description = 'categoría'
     def get_state(self):
-        return state_code_to_name[self.epsa.state]
+        rel_epsa = EPSA.objects.filter(code=self.epsa)
+        if rel_epsa:
+            state_code = str(rel_epsa[0].state)
+            if state_code in state_code_to_name.keys():
+                return state_code_to_name[state_code]
+        return ''
     get_state.short_description = 'departamento'
 
 VARIABLE_TYPE_CHOICES = (
@@ -349,11 +358,11 @@ class IndicatorMeasurement(BaseModel):
     '''
     Modelo Representando la medida de un Indicador en base a un reporte mensual, semestral o anual.
     '''
-    epsa = models.ForeignKey(
-        to='EPSA',
-        verbose_name='epsa',
-        on_delete=models.CASCADE,
-        help_text='Epsa que exhibe el indicador.'
+    epsa = models.CharField(
+        max_length=64,
+        verbose_name='EPSA',
+        help_text='EPSA que reporta las variables',
+        blank=True, null=True,
     )
     year = models.IntegerField(
         verbose_name='año',
@@ -372,14 +381,24 @@ class IndicatorMeasurement(BaseModel):
         unique_together = ('epsa','year','month',)
         verbose_name = 'Medida de indicadores'
         verbose_name_plural = 'Medidas de indicadores'
-        ordering = ['epsa__code', 'year', ]
+        ordering = ['epsa', 'year','month']
     def __str__(self):
-        return f'{self.epsa.code}-{self.year}'
+        return f'{self.epsa}-{self.year}'
     def get_category(self):
-        return self.epsa.category
+        rel_epsa = EPSA.objects.filter(code=self.epsa)
+        if rel_epsa:
+            cat = rel_epsa[0].category
+            if str(cat) in ['A','B','C','D']:
+                return str(cat)
+        return ''
     get_category.short_description = 'categoría'
     def get_state(self):
-        return state_code_to_name[self.epsa.state]
+        rel_epsa = EPSA.objects.filter(code=self.epsa)
+        if rel_epsa:
+            state_code = str(rel_epsa[0].state)
+            if state_code in state_code_to_name.keys():
+                return state_code_to_name[state_code]
+        return ''
     get_state.short_description = 'departamento'
 
 INDICATOR_NAMES = ['Rendimiento actual de la fuente', 'Uso eficiente del recurso', 'Cobertura de muestras de agua potable', 'Conformidad de los análisis de agua potable realizados', 'Dotación', 'Continuidad por racionamiento', 'Continuidad por corte', 'Cobertura del servicio de agua potable', 'Cobertura del servicio de alcantarillado sanitario', 'Cobertura de micromedición', 'Incidencia extracción de agua cruda subterránea ', 'Índice de tratamiento de agua residual', 'Control de agua residual', 'Capacidad instalada de planta de tratamiento de agua potable', 'Capacidad instalada de planta de tratamiento de agua residual ',

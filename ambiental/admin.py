@@ -13,8 +13,8 @@ class TecnicalDataSupInline(admin.StackedInline):
 @admin.register(SARH)
 class SARHModelAdmin(LeafletGeoAdmin):
     view_on_site = False
-    list_filter= ('epsa__category', 'epsa__state', 'epsa','municipality','sub_subt')
-    search_fields= ['epsa__code', 'epsa__name', 'epsa__state','user']
+    list_filter= ('epsa', 'state', 'epsa','municipality','sub_subt')
+    search_fields= ['epsa','user']
     list_display = ('sarh_id','epsa','user','get_state','municipality','get_sub_subt')
 
     inlines = [TecnicalDataSubInline,TecnicalDataSupInline]
