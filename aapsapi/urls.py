@@ -70,7 +70,7 @@ docs_view = include_docs_urls(
 
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/admin/'))
+    path('', RedirectView.as_view(url='/admin/')),
     path('jet/', include('jet.urls', 'jet')),
     path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     path('admin/', admin.site.urls),
