@@ -28,11 +28,11 @@ class VariableReportSerializer(QueryFieldsMixin, serializers.ModelSerializer):
 
         if epsa_code:
             epsa_tuple = EPSA.objects.get_or_create(code=epsa_code)
-            measurement = IndicatorMeasurement.objects.create(epsa=epsa_tuple[0], **validated_data)
+            report = VariableReport.objects.create(epsa=epsa_tuple[0], **validated_data)
         else:
-            measurement = IndicatorMeasurement.objects.create(**validated_data)
+            report = VariableReport.objects.create(**validated_data)
 
-        return measurement
+        return report
 
 class IndicatorMeasurementSerializer(QueryFieldsMixin, serializers.ModelSerializer):
     epsa = serializers.CharField(allow_blank=True,required=False)
