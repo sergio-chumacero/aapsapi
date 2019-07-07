@@ -1,7 +1,22 @@
 from rest_framework import viewsets
 from performance import models, serializers
+from rest_framework.response import Response
+from rest_framework import status
 
-class EPSAViewSet(viewsets.ModelViewSet):
+class CustomViewSet(viewsets.ModelViewSet):
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+        return super(CustomViewSet, self).get_serializer(*args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=False)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.initial_data)
+        return Response(serializer.instance, status=status.HTTP_201_CREATED)
+
+class EPSAViewSet(CustomViewSet):
     '''
     list:
     Retorna un conjunto de instancias del modelo `EPSA`.
@@ -21,9 +36,9 @@ class EPSAViewSet(viewsets.ModelViewSet):
     retorna sólamente la sigla y la categoría de todas las EPSA en el sistema.
 
     create:
-    Este punto de acceso permite el ingreso de instancias del modelo `EPSA` al sistema.
+    Este punto de acceso permite la creación instancias del modelo `EPSA` en el sistema.
 
-    El pedido HTTP debe ser del tipo `POST` y el cuerpo del pedido debe ser un objeto codificado del tipo `application/json` con los campos `code`, `name`, `state` y `category`, que representan la sigla, nombre, departamento y categoría de la EPSA ingresada.
+    El pedido HTTP debe ser del tipo `POST` y el cuerpo del pedido debe ser un objeto codificado del tipo `json` con los campos `code`, `name`, `state` y `category`, que representan la sigla, nombre, departamento y categoría de la EPSA ingresada.
 
     Las instancias pueden ser añadidas al sistema una a la vez o pueden ser ingresadas en masa agrupando a los objetos a ingresar en una lista en el JSON del pedido. Por ejemplo,
 
@@ -44,6 +59,8 @@ class EPSAViewSet(viewsets.ModelViewSet):
     Añadiría las instancias correspondientes a EPSAS y SAGUAPAC al sistema. 
 
     Si los objetos ingresados no pasan el proceso de validación del sistema, las instancias no serán creadas y el error será retornado como respuesta al pedido.
+
+    Si la sigla de una de las EPSA en creación coincide con la de una instancia que ya se encuentre en el sistema los atributos de esta serán actualizados. 
 
     read:
     Retorna una instancia específica del modelo `EPSA`.
@@ -121,13 +138,8 @@ class EPSAViewSet(viewsets.ModelViewSet):
     queryset = models.EPSA.objects.all()
     filterset_fields = ('code','state','category',)
 
-    def get_serializer(self, *args, **kwargs):
-        """ if an array is passed, set serializer to many """
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(EPSAViewSet, self).get_serializer(*args, **kwargs)
 
-class VariableViewSet(viewsets.ModelViewSet):
+class VariableViewSet(CustomViewSet):
     '''
     list:
     Retorna un conjunto de instancias del modelo `Variable`.
@@ -258,7 +270,7 @@ class VariableViewSet(viewsets.ModelViewSet):
         return super(VariableViewSet, self).get_serializer(*args, **kwargs)
 
 
-class IndicatorViewSet(viewsets.ModelViewSet):
+class IndicatorViewSet(CustomViewSet):
     '''
     list:
     Retorna un conjunto de instancias del modelo `Indicator` (indicador).
@@ -387,13 +399,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     queryset = models.Indicator.objects.all()
     filterset_fields = ('code','ind_id')
 
-    def get_serializer(self, *args, **kwargs):
-        """ if an array is passed, set serializer to many """
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(IndicatorViewSet, self).get_serializer(*args, **kwargs)
-
-class VariableReportViewSet(viewsets.ModelViewSet):
+class VariableReportViewSet(CustomViewSet):
     '''
     list:
     Retorna un conjunto de instancias del modelo `VariableReport` (reporte de variables).
@@ -532,13 +538,7 @@ class VariableReportViewSet(viewsets.ModelViewSet):
     queryset = models.VariableReport.objects.all()
     filterset_fields = ('epsa','year','month',)
 
-    def get_serializer(self, *args, **kwargs):
-        """ if an array is passed, set serializer to many """
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(VariableReportViewSet, self).get_serializer(*args, **kwargs)
-
-class IndicatorMeasurementViewSet(viewsets.ModelViewSet):
+class IndicatorMeasurementViewSet(CustomViewSet):
     '''
     list:
     Retorna un conjunto de instancias del modelo `IndicatorMeasurement` (medidad de indicadores).
@@ -675,10 +675,4 @@ class IndicatorMeasurementViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.IndicatorMeasurementSerializer
     queryset = models.IndicatorMeasurement.objects.all()
     filterset_fields = ('epsa','year','month',)
-
-    def get_serializer(self, *args, **kwargs):
-        """ if an array is passed, set serializer to many """
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(IndicatorMeasurementViewSet, self).get_serializer(*args, **kwargs)
 
