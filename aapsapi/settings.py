@@ -85,8 +85,7 @@ STATIC_ROOT = 'static'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'permissions.CustomPermission',
-        # 'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.DjangoModelPermissions',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
@@ -100,5 +99,3 @@ REST_FRAMEWORK = {
 SERIALIZATION_MODULES = {'geojson': 'djgeojson.serializers'}
 
 JET_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
-
-# from rest_framework.permissions import IsAdminUser

@@ -263,13 +263,6 @@ class VariableViewSet(CustomViewSet):
     queryset = models.Variable.objects.all()
     filterset_fields = ('code','var_id')
 
-    def get_serializer(self, *args, **kwargs):
-        """ if an array is passed, set serializer to many """
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(VariableViewSet, self).get_serializer(*args, **kwargs)
-
-
 class IndicatorViewSet(CustomViewSet):
     '''
     list:

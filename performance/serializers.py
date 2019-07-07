@@ -32,17 +32,23 @@ class CustomListModelSerializer(serializers.ListSerializer):
 def bulk_create_or_update(model,data,unique_together=[]):
     ret = []
     for props in data:
-        key_vals = [props.get(key_prop) for key_prop in unique_together]
         if not set(unique_together) <= set(props.keys()):
             ret.append({'ignorado':{'no_identificable':'No se proporcionaron todos los campos necesarios para identificar la instancia de manera única.'}})
+            continue
+        key_vals = [props.get(key_prop) for key_prop in unique_together]
+        if not any(key_vals):
+            ret.append({'ignorado':{'objeto_en_blanco':'Todas las propiedades clave de este objeto estan en blanco.'}})
             continue
         qs = model.objects.filter(**{k:v for k,v in zip(unique_together,key_vals)})
         if qs.count() > 0:
             qs.update(**props)
             ret_key = 'actualizado'
         else:
-            model.objects.create(**props)
-            ret_key = 'creado'
+            e,created = model.objects.get_or_create(**props)
+            if created:
+                ret_key = 'creado'
+            else:
+                ret_key = 'ignorado'
         ret.append({ret_key: props})
     return ret
 
