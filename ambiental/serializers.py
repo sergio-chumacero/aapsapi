@@ -38,7 +38,7 @@ class SARHListSerializer(serializers.ListSerializer):
                 qs.update(**data_dict)
                 ret_key = 'actualizado'
             else:
-                sarh = models.SARH.create(**data_dict)
+                sarh = models.SARH.objects.create(**data_dict)
                 ret_key = 'creado'
             if sub_list:
                 models.TecnicalDataSub.objects.filter(sarh=sarh).delete()
