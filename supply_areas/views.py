@@ -1,11 +1,17 @@
 import json
 from django.core import serializers
 from supply_areas.models import SupplyArea
-from rest_framework import viewsets, response
+from rest_framework import viewsets, response, serializers
+
+class SupplyAreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SupplyArea
+        fields = '__all__'
 
 class SupplyAreaViewSet(viewsets.ModelViewSet):
     
     queryset = SupplyArea.objects.all()
+    serializer_class = SupplyAreaSerializer
     '''
     list:
     Retorna un conjunto de instancias del modelo `SupplyAreas` (áreas de prestación de servicios).
