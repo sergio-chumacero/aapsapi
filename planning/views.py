@@ -1,7 +1,22 @@
 from rest_framework import viewsets
 from planning import models, serializers
+from rest_framework.response import Response
+from rest_framework import status
 
-class POAViewSet(viewsets.ModelViewSet):
+class CustomViewSet(viewsets.ModelViewSet):
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+        return super(CustomViewSet, self).get_serializer(*args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=False)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.initial_data)
+        return Response(serializer.instance, status=status.HTTP_201_CREATED)
+
+class POAViewSet(CustomViewSet):
     '''
     list:
     Retorna un conjunto de instancias del modelo de planificación `POA`.
@@ -157,13 +172,6 @@ class POAViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.POASerializer
     queryset = models.POA.objects.all()
     filterset_fields = ('epsa','year','order',)
-
-
-    def get_serializer(self, *args, **kwargs):
-        """ if an array is passed, set serializer to many """
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(POAViewSet, self).get_serializer(*args, **kwargs)
 
 class PlanViewSet(viewsets.ModelViewSet):
     '''

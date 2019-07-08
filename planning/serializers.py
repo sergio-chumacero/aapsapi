@@ -2,6 +2,8 @@ from rest_framework import serializers
 from planning import models
 from performance.models import EPSA
 from drf_queryfields import QueryFieldsMixin
+from collections import OrderedDict
+from rest_framework.relations import PKOnlyObject
 
 
 class CoopExpenseSerializer(QueryFieldsMixin, serializers.ModelSerializer):
@@ -14,7 +16,45 @@ class MuniExpenseSerializer(QueryFieldsMixin, serializers.ModelSerializer):
         model = models.MuniExpense
         exclude = ('id','poa',)
 
+class POAListSerializer(serializers.ListSerializer):
+    def is_valid(self,raise_exception=False):
+        if not hasattr(self, '_validated_data'):
+            self._validated_data = self.initial_data
+            self._errors = {}
+        return True
 
+    def create(self, validated_data):
+        ret = []
+        for data_dict in validated_data:
+            epsa = data_dict.get('epsa')
+            year = data_dict.get('year')
+            order = data_dict.get('order')
+            coop_data = data_dict.pop('coop_expense', None)
+            muni_data = data_dict.pop('muni_expense', None)
+
+            if not all([epsa,year,order,]):
+                ret.append({'ignorado':{'no_identificable':'No se proporcionaron todos los campos necesarios para identificar la instancia de manera única.'}})
+                continue
+            qs = models.POA.objects.filter(epsa=epsa,year=year,order=order)
+            if qs.count() > 0:
+                poa = qs[0]
+                qs.update(**data_dict)
+                ret_key = 'actualizado'
+            else:
+                poa = models.POA.objects.create(**data_dict)
+                ret_key = 'creado'
+            if coop_data:
+                models.CoopExpense.objects.filter(poa=poa).delete()
+                if coop_data.get('poa'):
+                    del coop_data['poa']
+                models.CoopExpense.objects.create(poa=poa,**coop_data)
+            if muni_data:
+                models.MuniExpense.objects.filter(poa=poa).delete()
+                if muni_data.get('poa'):
+                    del muni_data['poa']
+                models.MuniExpense.objects.create(poa=poa,**muni_data)
+            ret.append({ret_key: data_dict})
+        return ret
 class POASerializer(QueryFieldsMixin, serializers.ModelSerializer):
     coop_expense = CoopExpenseSerializer(required=False)
     muni_expense = MuniExpenseSerializer(required=False)
@@ -22,6 +62,7 @@ class POASerializer(QueryFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = models.POA
         fields = '__all__'
+        list_serializer_class = POAListSerializer
 
     def create(self, validated_data):
         epsa_code = validated_data.pop('epsa',None)
@@ -40,6 +81,25 @@ class POASerializer(QueryFieldsMixin, serializers.ModelSerializer):
             models.MuniExpense.objects.create(poa=poa,**muni_expense)
 
         return poa
+    
+    def to_representation(self, instance):
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            try:
+                attribute = field.get_attribute(instance)
+            except SkipField:
+                continue
+            if attribute in [None, '', []]:
+                continue
+            check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
+            if check_for_none is None:
+                ret[field.field_name] = None
+            else:
+                ret[field.field_name] = field.to_representation(attribute)
+
+        return ret
 
     # def create(self, validated_data):
     #     objects_types = ['incomes','expenses','investments','goals',]
