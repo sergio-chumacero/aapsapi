@@ -1,17 +1,25 @@
 from rest_framework import viewsets
 from ambiental import models, serializers
+from rest_framework.response import Response
+from rest_framework import status
 
-class SARHViewSet(viewsets.ModelViewSet):
+class CustomViewSet(viewsets.ModelViewSet):
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+        return super(CustomViewSet, self).get_serializer(*args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=False)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.initial_data)
+        return Response(serializer.instance, status=status.HTTP_201_CREATED)
+
+class SARHViewSet(CustomViewSet):
     serializer_class = serializers.SARHSerializer
     queryset = models.SARH.objects.all()
     filterset_fields = ('epsa',)
-
-
-    def get_serializer(self, *args, **kwargs):
-        """ if an array is passed, set serializer to many """
-        if isinstance(kwargs.get('data', {}), list):
-            kwargs['many'] = True
-        return super(SARHViewSet, self).get_serializer(*args, **kwargs)
 
 # import json
 # from django.core import serializers
